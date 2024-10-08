@@ -1,101 +1,151 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from "react";
+import { Zap, ChevronDown } from "lucide-react";
+import { useChat } from "ai/react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: "/api/openai",
+  });
+  const [inputText, setInputText] = useState("");
+  const [outputText, setOutputText] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const languages = [
+    "Spanish",
+    "Mandarin",
+    "Hindi",
+    "Arabic",
+    "French",
+    "Bengali",
+    "Russian",
+    "Portuguese",
+    "Indonesian",
+    "Urdu",
+    "German",
+    "Japanese",
+    "Swahili",
+    "Turkish",
+    "Korean",
+    "Italian",
+    "Thai",
+    "Vietnamese",
+    "Tamil",
+    "Tagalog",
+  ];
+
+  const handleConvert = async () => {
+    // Simulate translation (replace with actual API call)
+    try {
+      const response = await fetch("/api/openai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: `${inputText} in ${selectedLanguage}`,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Prompt sent successfully:", data);
+        // Handle output from backend or just show a success message
+        setOutputText("Prompt sent successfully!");
+      } else {
+        console.error("Error sending prompt:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during request:", error);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black font-sans text-white flex flex-col p-4 relative overflow-hidden">
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 z-0 grid grid-cols-[repeat(20,minmax(0,1fr))] grid-rows-[repeat(20,minmax(0,1fr))]">
+        {[...Array(400)].map((_, i) => (
+          <div key={i} className="border border-gray-900/30"></div>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex-grow flex flex-col items-center justify-center">
+        <h1 className="text-6xl font-extrabold text-center mb-5">
+          <span className="text-white">Let Me</span>
+          <span className="text-yellow-400 animate-pulse"> Know</span>
+        </h1>
+        <p className="text-xl text-center mb-6 text-gray-300">
+          What you want to know. I'll translate it.
+        </p>
+
+        <div className="w-full max-w-md space-y-6">
+          <div className="relative">
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Enter text to translate..."
+              className="w-full px-4 py-3 text-lg bg-gray-900 border-2 border-yellow-400 rounded-md outline-none placeholder-gray-500 text-white focus:ring-2 focus:ring-yellow-400"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Zap
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-400"
+              size={24}
+            />
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className="w-full px-4 py-3 text-lg bg-gray-900 border-2 border-yellow-400 rounded-md outline-none text-white focus:ring-2 focus:ring-yellow-400 appearance-none cursor-pointer"
+            >
+              <option value="" disabled>
+                Select language
+              </option>
+              {languages.map((lang) => (
+                <option key={lang} value={lang}>
+                  {lang}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-400 pointer-events-none"
+              size={24}
+            />
+          </div>
+
+          <button
+            onClick={handleConvert}
+            className="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-lg rounded-md transition-all hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300 uppercase tracking-wider"
           >
-            Read our docs
-          </a>
+            Convert!
+          </button>
+
+          {outputText && (
+            <div className="mt-8 p-4 bg-gray-900 border-2 border-white rounded-md">
+              <h2 className="text-xl font-bold mb-2 text-yellow-400">
+                Output:
+              </h2>
+              <p className="text-lg text-white">{outputText}</p>
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-yellow-400"></div>
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+        {["⬆️", "⬇️", "⬅️", "➡️"].map((btn) => (
+          <div
+            key={btn}
+            className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-yellow-400 font-bold text-xl border-2 border-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]"
+          >
+            {btn}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
