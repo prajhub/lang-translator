@@ -80,7 +80,7 @@ export default function Home() {
             <span className="text-yellow-400 animate-pulse"> Know</span>
           </h1>
           <p className="text-xl text-center mb-6 text-gray-300">
-            What you want to know. I'll translate it.
+            What you want to know. I&#39;ll translate it.
           </p>
 
           <div className="w-full max-w-md space-y-6">
