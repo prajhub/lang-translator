@@ -1,5 +1,3 @@
-import OpenAI from "openai";
-import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
